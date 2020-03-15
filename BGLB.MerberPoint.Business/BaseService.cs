@@ -43,6 +43,19 @@ namespace BGLB.MerberPoint.Business
             return db.Set<T>().FirstOrDefault(whereLambda);
         }
 
+        public T Find(Expression<Func<T, bool>> whereLambda)
+        {
+            return db.Set<T>().FirstOrDefault(whereLambda);
+        }
+        /// <summary>
+        /// 查询列表
+        /// </summary>
+        /// <param name="whereLambda"></param>
+        /// <returns></returns>
+        public virtual IQueryable<T> GetList(Expression<Func<T, bool>> whereLambda)
+        {
+                return db.Set<T>().Where(whereLambda);
+        }
         /// <summary>
         /// 用于排序查询的虚方法 子类 里面可以重写
         /// </summary>
@@ -62,7 +75,6 @@ namespace BGLB.MerberPoint.Business
                 return db.Set<T>().Where(whereLambda).OrderByDescending(orderBy);
             }
         }
-
         /// <summary>
         /// 分页查询的虚方法 带排序 子类 里面可以重写
         /// </summary>
@@ -87,5 +99,8 @@ namespace BGLB.MerberPoint.Business
                 return db.Set<T>().Where(whereLambda).OrderByDescending(orderBy).Skip((pageIndex - 1) * pageSize).Take(pageSize);
             }
         }
+
+        
+
     }
 }

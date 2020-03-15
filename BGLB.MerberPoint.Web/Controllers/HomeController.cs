@@ -1,31 +1,58 @@
 ﻿using BGLB.MerberPoint.Business;
+using BGLB.MerberPoint.Entity.ViewModel;
 using System.Web.Mvc;
 
 namespace BGLB.MerberPoint.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly UsersServive _AirportServive = new UsersServive();
+        private UsersServive _UsersServive = new UsersServive();
 
+        [Authorize]
         public ActionResult Index()
         {
-            var userModel = _AirportServive.GetEntity(e => e.U_LoginName == "BGLB");
-
-            return Json(userModel, JsonRequestBehavior.AllowGet);
-        }
-
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
             return View();
         }
 
-        public ActionResult Contact()
+        public ActionResult Login()
         {
-            ViewBag.Message = "Your contact page.";
-
             return View();
         }
+
+        [HttpPost]
+        public ActionResult Login(LoginViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = _UsersServive.Login(viewModel);
+                if (result.IsSuccess)
+                {
+                    var returnUrl = Request["ReturnUrl"];
+                    if (!string.IsNullOrWhiteSpace(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "网络繁忙");
+                }
+                return View();
+            }
+            else
+            {
+                ModelState.AddModelError("", "用户名或密码错误");
+                return View();
+            }
+
+        }
+
+        public ActionResult Logout()
+        {
+            _UsersServive.Logout();
+            return RedirectToAction("Login");
+        }
+
     }
 }

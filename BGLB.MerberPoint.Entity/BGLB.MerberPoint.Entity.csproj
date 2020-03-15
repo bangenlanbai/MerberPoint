@@ -42,6 +42,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,8 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="DTOModel\LoginUserDTOModel.cs" />
+    <Compile Include="DTOModel\MyFormsPrincipal.cs" />
     <Compile Include="POCOModel\CardLevels.cs" />
     <Compile Include="POCOModel\Categories.cs" />
     <Compile Include="POCOModel\CategoryItems.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="POCOModel\TransferLogs.cs" />
     <Compile Include="POCOModel\Users.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel\GetPagedMeberCardListViewModel.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />
   </ItemGroup>
   <ItemGroup>

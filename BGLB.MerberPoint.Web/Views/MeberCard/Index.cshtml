@@ -1,0 +1,59 @@
+﻿<link href="~/Content/easyui/default/easyui.css" rel="stylesheet" />
+<link href="~/Content/easyui/icon.css" rel="stylesheet" />
+<script src="~/Scripts/easyui/jquery.min.js"></script>
+<script src="~/Scripts/easyui/jquery.easyui.min.js"></script>
+<script src="~/Scripts/easyui/easyui-lang-zh_CN.js"></script>
+<script>
+    $(function () {
+        $("#dg_ MeberCard").datagrid({
+            fitColumns: true,//使列自动展开 或者 收缩到合适的DataGrid宽度
+            toolbar: "#tb",//toolbar:通过选择器指定的工具栏
+            pagination: true,//pagination：如果为True ， 则在DataGrid控件底部显示分业工具栏
+            fit: true,//fit当设置为true的时候，面板大小将自适应父容器
+            singleSelect: true,//如果为true 则只允许选择一行
+            rownumbers: true,//如果为TRUE，则显示一个行号列
+            url: "/MeberCard/GetPagedMeberCardList",//设置能够返回Json数据的Action所对应的路径
+            columns: [[
+                { field: 'CardId', title: '会员卡号', width: 222, aligin: "center", },
+                { field: 'Name', title: '会员姓名', width: 222, aligin: "center", },
+                { field: 'Mobile', title: '手机号码', width: 222, aligin: "center", },
+                { field: 'TotalMoney', title: '累计消费', width: 222, aligin: "center", },
+                { field: 'State', title: '会员卡状态', width: 222, aligin: "center", },
+                { field: 'Point', title: '当前积分', width: 222, aligin: "center", },
+                { field: 'Sex', title: '性别', width: 222, aligin: "center", },
+                {
+                    field: 'CreateTime', title: '登记时间', width: 222, aligin: "center", formatter: function (value, row, index) {
+                        return FormatJsonTime(row.CreateTime);
+                    }
+                },
+
+                { field: 'LevelName', title: '当前等级', width: 222, aligin: "center", }
+            ]]
+        })
+    });
+
+</script>
+<table id="dg_ MeberCard" align="center"></table>
+<div id="tb" style="padding:5px;height:auto">
+    <div style="margin-bottom:5px">
+        <a href="#" id="btn_Create" class="easyui-linkbutton" iconCls="icon-add">新增</a>
+        <a href="#" id="btn_Edit" class="easyui-linkbutton" iconCls="icon-edit">修改</a>
+        <a href="#" id="btn_Delete" class="easyui-linkbutton" iconCls="icon-remove">删除</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-lock">锁定/挂失</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-filter">会员转账</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-reload">会员换卡</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-sum">导出Excel</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-tip">导入Excel</a>
+    </div>
+    <div>
+        会员卡号: <input id="txt_ CardId" type="text" class="easyui-textbox" />
+        会员姓名: <input id="txt_ Nane" type="text" class="easyui-textbox" />
+        电话: <input id="txt_ Mobile" type="text" class="easyui-textbox" />
+        会员等级:@Html.DropDownList("CardLevel", ViewBag.CardLevel as IEnumerable<SelectListItem>)
+        状态: @Html.DropDownList("CardTypeSelectList", ViewBag.CardTypeSelectList as IEnumerable<SelectListItem>)
+        <a href="#" id="btn_Search" class="easyui-linkbutton Search" iconCls="icon-search">查询</a>
+    </div>
+</div>
+<div id="dlg" class="easyui-dialog" data-ng-options="iconCls: 'icon-save', resizable:true.modal:true,closed:true">
+    <iframe src="frml" width="99%" height="99%" frameborder="0"></iframe>
+</div>
