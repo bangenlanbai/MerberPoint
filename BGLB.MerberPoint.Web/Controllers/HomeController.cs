@@ -36,16 +36,15 @@ namespace BGLB.MerberPoint.Web.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "网络繁忙");
+                    ModelState.AddModelError("NetWork", "网络繁忙");
                 }
                 return View();
             }
             else
             {
-                ModelState.AddModelError("", "用户名或密码错误");
+                ModelState.AddModelError("UserNameOrPassword", "用户名或密码错误");
                 return View();
             }
-
         }
 
         public ActionResult Logout()

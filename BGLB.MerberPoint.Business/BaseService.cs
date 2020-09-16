@@ -33,7 +33,7 @@ namespace BGLB.MerberPoint.Business
             //把实体附加到EF容器内
             db.Set<T>().Attach(entity);
             //把实体标记为修改
-            db.Entry<T>(entity).State = EntityState.Modified;
+            db.Entry(entity).State = EntityState.Modified;
             return db.SaveChanges() > 0;
         }
 
@@ -47,6 +47,7 @@ namespace BGLB.MerberPoint.Business
         {
             return db.Set<T>().FirstOrDefault(whereLambda);
         }
+
         /// <summary>
         /// 查询列表
         /// </summary>

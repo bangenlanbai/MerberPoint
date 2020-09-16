@@ -1,4 +1,4 @@
-﻿@using BGLB.MerberPoint.Entity.DTOModel;
+﻿@using HPIT.MemberPoint.Entity.DtoModel;
 @{
     ViewBag.Title = "Index";
 }
@@ -14,7 +14,7 @@
     <div> 
         当前用户：
         @{ 
-            var user = User as MyFormsPrincipal<LoginUserDTOModel>;
+            var user = User as MyFormsPrincipal<LoginUserDtoModel>;
             if (user!=null && user.UserData!=null)
             {
                 <span>@user.UserData.UserName</span>
@@ -27,7 +27,7 @@
     </div>
 
     <div>
-        @Html.ActionLink("登出", "Logout", "Home");
+        @Html.ActionLink("注销", "Logout", "Admin");
     </div>
 </body>
 </html>

@@ -11,4 +11,20 @@ namespace BGLB.MerberPoint.Common
         [Description("锁定")]
         锁定 = 3
     }
+
+    public enum SexTypeEnum
+    {
+        [Description("男")]
+        男 = 1,
+        [Description("女")]
+        女 = 2,
+    }
+
+    public enum SearchEnum
+    {
+        [Description("会员卡编号")]
+        MC_ID = 1,
+        [Description("会员卡号")]
+        MC_CardID = 2,
+    }
 }

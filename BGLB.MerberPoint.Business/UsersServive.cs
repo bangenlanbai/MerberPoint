@@ -47,6 +47,7 @@ namespace BGLB.MerberPoint.Business
             HttpContext.Current.Request.Cookies.Remove(FormsAuthentication.FormsCookieName);
         }
 
+        //生成cookie
         private void SetUserDate(LoginUserDTOModel loginUserDTOModel)
         {
             //把用户信息转为json字符串

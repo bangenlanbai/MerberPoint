@@ -1,0 +1,134 @@
+﻿@model BGLB.MerberPoint.Entity.ViewModel.MerberCardTransferViewModel
+<link href="~/Content/easyui/default/easyui.css" rel="stylesheet" />
+<link href="~/Content/easyui/icon.css" rel="stylesheet" />
+<script src="~/Scripts/easyui/jquery.min.js"></script>
+<script src="~/Scripts/easyui/jquery.easyui.min.js"></script>
+<script src="~/Scripts/easyui/easyui-lang-zh_CN.js"></script>
+
+<script>
+    $(function () {
+        $('#btn_Query').click(function () {
+            //获取要查询的卡号  $("#IdCard").val()
+
+            var ids = $("#IdCard").val();
+            console.log(ids);
+            $.post("/MeberCard/Transfer", { id: ids }, function (data) {
+                console.log(data);
+                $("#ToMeberCardId").val(data.ToMeberCardId);
+                $("#ToName").val(data.ToName);
+                $("#ToPoint").val(data.ToPoint);
+                $("#ToTotalMoneys").val(data.ToTotalMoneys);
+                   // $.messager.alert('温馨提示', data.Msg, 'error');              
+            }, "json");
+
+
+        });
+        $("#btn_Zhuan").click(function () {
+            $("#MeberCardTransferList").form('submit', {
+                url: '/MeberCard/Transfer',
+                onSubmit: function () {
+                    var isValid = $(this).form('validate');
+                    return isValid;//返回false终止表单提交
+                },
+                success: function (data) {
+                    //序列化Json
+                    //1.eval()
+                    //var json = eval("(" + data + ")");
+                    //2.
+                    var json = JSON.parse(data);
+                    if (json.ResultStatus == 1) {
+                        //1提示消息
+                        window.parent.$.messager.alert('温馨提示', json.Msg, 'info');
+                        //2关闭弹窗
+                        window.parent.$("#dlg").dialog("close");
+
+                    }
+                    else {
+                        $.messager.alert('温馨提示', json.Msg, 'error');
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+@using (Html.BeginForm("Transfer", "MeberCard", FormMethod.Post, new { id = "MeberCardTransferList" }))
+{
+    <fieldset style=" width:60%; height:auto;margin:auto">
+        <legend>会员转账</legend>
+        <fieldset>
+            <legend>转账会员</legend>
+            <table>
+                <tr>
+                    <td>卡&emsp;号:</td>
+                    <td>@Html.TextBoxFor(model => model.FromMerberCardId, new { @class = "easyui-validatebox", @readonly = true })</td>
+                    <td>姓&emsp; 名:</td>
+                    <td>@Html.TextBoxFor(model => model.FromName, new { @class = "easyui-validatebox", @readonly = true })</td>
+                </tr>
+                <tr>
+                    <td>账户积分:</td>
+                    <td>@Html.TextBoxFor(model => model.FromTotalMoney, new { @class = "easyui-validatebox", @readonly = true })</td>
+                    <td>累计消费:</td>
+                    <td>@Html.TextBoxFor(model => model.FromTotalMoney, new { @class = "easyui-validatebox", @readonly = true })</td>
+                </tr>
+            </table>
+        </fieldset>
+        <p>点击查找获取当前输入会员信息</p>
+        <input type="text" id="IdCard" />
+        <input type="button" value="查找" style="background-color:lightskyblue ; width:50px" id="btn_Query" />
+
+        <fieldset>
+            <legend>收款会员</legend>
+
+            <table>
+                <tr>
+                    <td>卡&emsp;号:</td>
+                    <td>@Html.TextBoxFor(model => model.ToMerberCardId, new { @class = "easyui-validatebox", @readonly = true })</td>
+                    <td>姓&emsp;名:</td>
+                    <td>@Html.TextBoxFor(model => model.ToName, new { @class = "easyui-validatebox", @readonly = true })</td>
+                </tr>
+                <tr>
+                    <td>账户积分:</td>
+                    <td>@Html.TextBoxFor(model => model.ToPoint, new { @class = "easyui-validatebox", @readonly = true })</td>
+                    <td>累计消费:</td>
+                    <td>@Html.TextBoxFor(model => model.ToTotalMoney, new { @class = "easyui-validatebox", @readonly = true })</td>
+                </tr>
+            </table>
+        </fieldset>
+        <table>
+            <tr>
+                <td>转账金额:</td>
+                <td>@Html.TextBoxFor(model => model.TransferMoney, new { @class = "easyui-validatebox", data_options = "required:true", @missingMessage = "必填" })</td>
+            </tr>
+            <tr>
+                <td>操作备注:</td>
+                <td>@Html.TextBoxFor(model => model.Remark, new { @class = "easyui-validatebox", data_options = "required:true", @missingMessage = "必填" })</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <input type="button" value="转账" style="background-color:lightskyblue;width:50px" id="btn_Zhuan" />
+                </td>
+            </tr>
+        </table>
+
+
+    </fieldset>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

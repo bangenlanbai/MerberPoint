@@ -1,0 +1,106 @@
+﻿@model BGLB.MerberPoint.Entity.ViewModel.MerberCardEditViewModel
+<link href="~/Content/easyui/default/easyui.css" rel="stylesheet" />
+<link href="~/Content/easyui/icon.css" rel="stylesheet" />
+<script src="~/Scripts/easyui/jquery.min.js"></script>
+<script src="~/Scripts/easyui/jquery.easyui.min.js"></script>
+<script src="~/Scripts/easyui/easyui-lang-zh_CN.js"></script>
+
+
+<script>
+
+    $(function () {
+        var postUrl = "";
+
+        $("#btn_submit").click(function () {
+            //根据隐藏域的值判断当前的操作是新增还是编辑，如果大于0说明是编辑，否则为新增
+            if (parseInt($("#Id").val()) > 0) {
+                postUrl = "/MeberCard/Update";
+            }
+            else {
+                postUrl = "/MeberCard/Create";
+            }
+
+            $("#from_MerberCard").form('submit', {
+                url: postUrl,
+                onSubmit: function () {
+                    var isValid = $(this).form('validate');
+                    return isValid;//返回false终止表单提交
+                },
+                success: function (data) {
+                    //序列化Json
+                    //1.eval()
+                    //var json = eval("(" + data + ")");
+
+                    //2.
+                    var json = JSON.parse(data);
+                    if (json.ResultStatus == 1) {
+                        //1提示消息
+                        window.parent.$.messager.alert('温馨提示', json.Msg, 'info');
+                        //2关闭弹窗
+                        window.parent.$("#dlg").dialog("close");
+                        //3刷新列表
+                        window.parent.$("#dg_MerberCard").datagrid("reload");
+                    }
+                    else {
+                        $.messager.alert('温馨提示', json.Msg, 'error');
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+
+@using (Html.BeginForm("Edit", "MeberCard", FormMethod.Post, new { id = "from_MerberCard" }))
+{ 
+    <fieldset>
+        <legend>会员信息</legend>
+        <table>
+            <tr>
+                <td>会员卡号</td>
+                <td>@Html.TextBoxFor(model => model.CardId, new { @class = "easyui-validatebox", data_options = "required:true", missingMessage = "请输入会员卡号" })</td>
+            </tr>
+            <tr>
+                <td>会员姓名</td>
+                <td> @Html.TextBoxFor(model => model.Name, new { @class = "easyui-validatebox", data_options = "required:true", missingMessage = "请输入会员姓名" })</td>
+            </tr>
+            <tr>
+                <td>会员电话</td>
+                <td>  @Html.TextBoxFor(model => model.Mobile, new { @class = "easyui-validatebox", data_options = "required:true", missingMessage = "请输入会员电话" })</td>
+            </tr>
+            <tr>
+                <td>会员性别</td>
+                <td>@Html.EnumDropDownListFor(model => model.Sex, "请选择")</td>
+            </tr>
+            <tr>
+                <td>会员等级</td>
+                <td>  @Html.DropDownListFor(model => Model.CardLevelId, ViewBag.CardLevel as IEnumerable<SelectListItem>)</td>
+            </tr>
+            <tr>
+                <td>当前积分</td>
+                <td>  @Html.TextBoxFor(model => model.Point, new { @class = "easyui-validatebox", data_options = "required:true", missingMessage = "请输入当前积分" })</td>
+            </tr>
+           <tr>
+                    <td>过期时间</td>
+                    <td>   @Html.TextBoxFor(model =>model.PastTime,new { @class = "easyui-datebox"})</td>
+                </tr>
+            <tr>
+                <td>卡片状态</td>
+                <td>@Html.EnumDropDownListFor(model => model.CardState, "请选择")</td>
+            </tr>
+            <tr>
+                <td>卡片付费</td>
+                <td>@Html.TextBoxFor(model => model.Money, new { @class = "easyui-validatebox", data_options = "required:true", missingMessage = "请输入卡片付费数量" })</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="button" id="btn_submit" value="提交" /></td>
+            </tr>
+
+        </table>
+        @Html.HiddenFor(model => model.Id)
+    </fieldset>
+
+}
+
+

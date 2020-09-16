@@ -26,7 +26,6 @@ namespace BGLB.MerberPoint.Common
                 }
                 return builder.ToString();
             }
-
         }
     }
 }

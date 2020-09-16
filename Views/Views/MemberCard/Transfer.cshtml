@@ -1,0 +1,134 @@
+﻿@model HPIT.MemberPoint.Entity.ViewModel.MemberCardTransferViewModel
+<link href="~/Content/jquery-easyui-1.8.6/themes/default/easyui.css" rel="stylesheet" />
+<link href="~/Content/jquery-easyui-1.8.6/themes/icon.css" rel="stylesheet" />
+<script src="~/Content/jquery-easyui-1.8.6/jquery.min.js"></script>
+<script src="~/Content/jquery-easyui-1.8.6/jquery.easyui.min.js"></script>
+<script src="~/Content/jquery-easyui-1.8.6/locale/easyui-lang-zh_CN.js"></script>
+
+<script>
+    $(function () {
+        $('#btn_Query').click(function () {
+            //获取要查询的卡号  $("#IdCard").val()
+
+            var ids = $("#IdCard").val();
+            $.post("/MemberCard/Search", { id: ids }, function (data) {
+                console.log(data);
+                if (data.ResultStatus == 1) {
+                    $("#ToMemberCardId").val(data.Data.ToMemberCardId);
+                    $("#ToName").val(data.Data.ToName);
+                    $("#ToPoint").val(data.Data.ToPoint);
+                    $("#TotalMoneys").val(data.Data.TotalMoneys);
+                }
+            }, "json");
+
+
+        });
+        $("#btn_Zhuan").click(function () {
+            $("#MemberCardTransferList").form('submit', {
+                url: '/MemberCard/ToTransfer',
+                onSubmit: function () {
+                    var isValid = $(this).form('validate');
+                    return isValid;//返回false终止表单提交
+                },
+                success: function (data) {
+                    //序列化Json
+                    //1.eval()
+                    //var json = eval("(" + data + ")");
+                    //2.
+                    var json = JSON.parse(data);
+                    if (json.ResultStatus == 1) {
+                        //1提示消息
+                        window.parent.$.messager.alert('温馨提示', json.Msg, 'info');
+                        //2关闭弹窗
+                        window.parent.$("#dlg").dialog("close");
+                        //3刷新列表
+                        window.parent.$("#dg_MemberCard").datagrid("reload");
+                    }
+                    else {
+                        $.messager.alert('温馨提示', json.Msg, 'error');
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+@using (Html.BeginForm("", "", FormMethod.Post, new { id = "MemberCardTransferList" }))
+{
+    @Html.HiddenFor(model => model.Id)
+    <fieldset style=" width:60%; height:auto;margin:auto">
+        <legend> 会员转账  </legend>
+        <fieldset>
+            <legend>转账会员</legend>
+            <table>
+                <tr>
+                    <td>卡&emsp;号:</td>
+                    <td>@Html.TextBoxFor(model => model.CardID,new{disabled="disabled" })</td>
+                    <td>姓&emsp; 名:</td>
+                    <td>@Html.TextBoxFor(Model => Model.Name,new{disabled="disabled" })</td>
+                </tr>
+                <tr>
+                    <td>账户积分:</td>
+                    <td>@Html.TextBoxFor(Model => Model.Point,new{disabled="disabled" })</td>
+                    <td>累计消费:</td>
+                    <td>@Html.TextBoxFor(Model => Model.TotalMoney,new{disabled="disabled" })</td>
+                </tr>
+            </table>
+        </fieldset>
+        <p>点击查找获取当前输入会员信息</p>
+        <input type="text" id="IdCard" />
+        <input type="button" value="查找" style="background-color:lightskyblue ; width:50px" id="btn_Query" />
+
+        <fieldset>
+            <legend>收款会员</legend>
+
+            <table>
+                <tr>
+                    <td>卡&emsp;号:</td>
+                    <td>@Html.TextBoxFor(model => model.ToMemberCardId,new{disabled="disabled" })</td>
+                    <td>姓&emsp;名:</td>
+                    <td>@Html.TextBoxFor(Model => Model.ToName,new{disabled="disabled" })</td>
+                </tr>
+                <tr>
+                    <td>账户积分:</td>
+                    <td>@Html.TextBoxFor(Model => Model.ToPoint,new{disabled="disabled" })</td>
+                    <td>累计消费:</td>
+                    <td>@Html.TextBoxFor(Model => Model.TotalMoneys,new{disabled="disabled" })</td>
+                </tr>
+            </table>
+        </fieldset>
+        <table>
+            <tr>
+                <td>转账金额:</td>
+                <td>@Html.TextBoxFor(model => model.TransferMoney)</td>
+            </tr>
+            <tr>
+                <td>操作备注:</td>
+                <td>@Html.TextBoxFor(model => model.Remark ,new {@class="easyui-validatebox" ,data_options="required:true",@missingMessage="必填"})</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="button" value="转账" style="background-color:lightskyblue;width:50px" id="btn_Zhuan" /></td>
+            </tr>
+        </table>
+
+
+    </fieldset>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -3,16 +3,20 @@
 <script src="~/Scripts/easyui/jquery.min.js"></script>
 <script src="~/Scripts/easyui/jquery.easyui.min.js"></script>
 <script src="~/Scripts/easyui/easyui-lang-zh_CN.js"></script>
+<script src="~/Scripts/tools/tools.js"></script>
+
+@using BGLB.MerberPoint.Web.Controllers
+
 <script>
     $(function () {
-        $("#dg_ MeberCard").datagrid({
+        $("#dg_MerberCard").datagrid({
             fitColumns: true,//使列自动展开 或者 收缩到合适的DataGrid宽度
             toolbar: "#tb",//toolbar:通过选择器指定的工具栏
             pagination: true,//pagination：如果为True ， 则在DataGrid控件底部显示分业工具栏
             fit: true,//fit当设置为true的时候，面板大小将自适应父容器
             singleSelect: true,//如果为true 则只允许选择一行
             rownumbers: true,//如果为TRUE，则显示一个行号列
-            url: "/MeberCard/GetPagedMeberCardList",//设置能够返回Json数据的Action所对应的路径
+            url: "/MeberCard/GetPagedMeberCardList/",//设置能够返回Json数据的Action所对应的路径
             columns: [[
                 { field: 'CardId', title: '会员卡号', width: 222, aligin: "center", },
                 { field: 'Name', title: '会员姓名', width: 222, aligin: "center", },
@@ -21,39 +25,115 @@
                 { field: 'State', title: '会员卡状态', width: 222, aligin: "center", },
                 { field: 'Point', title: '当前积分', width: 222, aligin: "center", },
                 { field: 'Sex', title: '性别', width: 222, aligin: "center", },
-                {
-                    field: 'CreateTime', title: '登记时间', width: 222, aligin: "center", formatter: function (value, row, index) {
-                        return FormatJsonTime(row.CreateTime);
-                    }
-                },
-
-                { field: 'LevelName', title: '当前等级', width: 222, aligin: "center", }
+                { field: 'CreateTime', title: '登记时间', width: 222, aligin: "center", formatter: function (value) {return FormatJsonTime(value); }},
+                { field: 'CardLevelName', title: '当前等级', width: 222, aligin: "center", }
             ]]
-        })
+        });
+
+
+        $("#btn_Search").click(function () {
+            $("#dg_MerberCard").datagrid("load", {
+                CardId: $.trim($("#txt_CardId").val()),
+                Name: $.trim($("#txt_Name").val()),
+                Mobile: $.trim($("#txt_Mobile").val()),
+                State: $.trim($("#CardTypeSelectList").val()),
+                CardLevelId: $.trim($("#CardLevel").val()),
+            })
+        });
+
+
+        //添加
+        //点击按钮弹出添加dialog对话框
+        $("#btn_Create").click(function () {
+            //1弹出dialog对话框
+            $("#dlg").dialog({ width: 900, height: 500 }).dialog("setTitle", "添加会员").dialog("open");
+            //2给iframe的src属性赋值
+            //用attr找到src属性
+            $("#frml").attr("src", "/MeberCard/Edit");
+        });
+
+        //编辑
+        //点击按钮弹出编辑dialog对话框
+        $("#btn_Edit").click(function () {
+            //1判断用户是否选中行
+            var row = $("#dg_MerberCard").datagrid("getSelected");
+            //2如果选中打开数据弹窗，否则提示用户
+            if (row == null) {
+                $.messager.alert("温馨提示", "请选择要编辑的行", "warning");
+            }
+            else {
+                //1弹出dialog对话框
+                $("#dlg").dialog({ width: 900, height: 500 }).dialog("setTitle", "编辑会员").dialog("open");
+                //2给iframe的src属性赋值
+                $("#frml").attr("src", "/MeberCard/Edit/" + row.Id);
+            }
+        });
+        //删除会员
+        $("#btn_Delete").click(function () {
+            //1判断用户是否选中行
+            //2如果选中，弹出确认框，选择是否删除
+            var row = $("#dg_MerberCard").datagrid("getSelected");
+            if (row == null) {
+                $.messager.alert("温馨提示", "请选择要删除的行", "warning");
+            }
+            else {
+                $.messager.confirm("确认", "您确认要删除吗", function (r) {
+                    if (r) {
+                        $.post("/MerberCard/Delete", { id: row.Id }, function (data) {
+                            if (data.ResultStatus == 1) {
+                                //1提示消息
+                                $.messager.alert("温馨提示", data.Msg, "info");
+                                //2重新加载到数据列表
+                                $("#dg_MerberCard").datagrid("reload");
+                            }
+                            else {
+                                $.messager.alert("温馨提示", data.Msg, "error");
+                            }
+                        }, "json");
+                    }
+                });
+            }
+        });
+        //转账
+        //点击按钮弹出转账dialog对话框
+        $("#btn_zhuanzhang").click(function () {
+            //1判断用户是否选中行
+            var row = $("#dg_MerberCard").datagrid("getSelected");
+            //2如果选中打开数据弹窗，否则提示用户
+            if (row == null) {
+                $.messager.alert("温馨提示", "请选择要转账的会员", "warning");
+            }
+            else {
+                //1弹出dialog对话框
+                $("#dlg").dialog({ width: 900, height: 500 }).dialog("setTitle", "会员转账").dialog("open");
+                //2给iframe的src属性赋值
+                $("#frml").attr("src", "/MeberCard/Transfer/" + row.CardId);
+            }
+        });
     });
 
 </script>
-<table id="dg_ MeberCard" align="center"></table>
+<table id="dg_MerberCard" align="center"></table>
 <div id="tb" style="padding:5px;height:auto">
     <div style="margin-bottom:5px">
         <a href="#" id="btn_Create" class="easyui-linkbutton" iconCls="icon-add">新增</a>
         <a href="#" id="btn_Edit" class="easyui-linkbutton" iconCls="icon-edit">修改</a>
         <a href="#" id="btn_Delete" class="easyui-linkbutton" iconCls="icon-remove">删除</a>
         <a href="#" class="easyui-linkbutton" iconCls="icon-lock">锁定/挂失</a>
-        <a href="#" class="easyui-linkbutton" iconCls="icon-filter">会员转账</a>
+        <a href="#" id="btn_zhuanzhang" class="easyui-linkbutton" iconCls="icon-filter">会员转账</a>
         <a href="#" class="easyui-linkbutton" iconCls="icon-reload">会员换卡</a>
         <a href="#" class="easyui-linkbutton" iconCls="icon-sum">导出Excel</a>
         <a href="#" class="easyui-linkbutton" iconCls="icon-tip">导入Excel</a>
     </div>
     <div>
-        会员卡号: <input id="txt_ CardId" type="text" class="easyui-textbox" />
-        会员姓名: <input id="txt_ Nane" type="text" class="easyui-textbox" />
-        电话: <input id="txt_ Mobile" type="text" class="easyui-textbox" />
+        会员卡号: <input id="txt_CardId" type="text" class="easyui-textbox" />
+        会员姓名: <input id="txt_Name" type="text" class="easyui-textbox" />
+        电话: <input id="txt_Mobile" type="text" class="easyui-textbox" />
         会员等级:@Html.DropDownList("CardLevel", ViewBag.CardLevel as IEnumerable<SelectListItem>)
         状态: @Html.DropDownList("CardTypeSelectList", ViewBag.CardTypeSelectList as IEnumerable<SelectListItem>)
         <a href="#" id="btn_Search" class="easyui-linkbutton Search" iconCls="icon-search">查询</a>
     </div>
 </div>
-<div id="dlg" class="easyui-dialog" data-ng-options="iconCls: 'icon-save', resizable:true.modal:true,closed:true">
-    <iframe src="frml" width="99%" height="99%" frameborder="0"></iframe>
+<div id="dlg" class="" data-options="iconCls:'icon-save',resizable:true,model:true,closed:true">
+    <iframe id="frml" width="99%" height="99%" frameborder="0"></iframe>
 </div>
