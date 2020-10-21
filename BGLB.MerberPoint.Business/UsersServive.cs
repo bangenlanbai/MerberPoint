@@ -20,7 +20,7 @@ namespace BGLB.MerberPoint.Business
             var model = Find(e => e.U_LoginName == viewModel.UserName && e.U_Password == viewModel.Password);
             if (model == null)
             {
-                return new OperateResult() { IsSuccess = false,Msg="用户名和密码不匹配"};
+                return new OperateResult( false, "用户名和密码不匹配");
             }
             else
             {
@@ -31,7 +31,7 @@ namespace BGLB.MerberPoint.Business
                     RealName = model.U_RealName
                 };
                 SetUserDate(dtoModel);
-                return new OperateResult() { IsSuccess = true, Msg = "登陆成功" };
+                return new OperateResult( true, "登陆成功");
             }
         }
         /// <summary>

@@ -59,7 +59,6 @@ namespace BGLB.MerberPoint.Business
             return new OperateResult(true, "", dataGridViewModel);
         }
 
-
         /// <summary>
         /// 会员的添加
         /// </summary>
@@ -98,11 +97,11 @@ namespace BGLB.MerberPoint.Business
             model.MC_TotalCount = 0;
             if (Add(model))
             {
-                return new OperateResult() { IsSuccess = true, Msg = "创建成功" };
+                return new OperateResult(true,"创建成功",null);
             }
             else
             {
-                return new OperateResult() { IsSuccess = true, Msg = "网络异常" };
+                return new OperateResult(true, "网络异常", null);
             }
 
         }
@@ -121,7 +120,7 @@ namespace BGLB.MerberPoint.Business
             if (model == null)
             {
 
-                return new OperateResult() { IsSuccess = false, Msg = "当前会员未找到" };
+                return new OperateResult(false, "当前会员未找到", null);
 
             }
             var viewModel = new MerberCardEditViewModel()
@@ -145,7 +144,7 @@ namespace BGLB.MerberPoint.Business
                 Name = model.MC_Name
             };
 
-            return new OperateResult() { IsSuccess = true, Msg = "", Data = viewModel };
+            return new OperateResult(true,"",viewModel);
 
         }
 
@@ -155,7 +154,7 @@ namespace BGLB.MerberPoint.Business
             var model = Find(e => e.MC_ID == viewModel.Id);
             if (model == null)
             {
-                return new OperateResult() { IsSuccess = false, Msg = "当前会员未找到" };
+                return new OperateResult(false, "当前会员未找到");
 
             }
 
@@ -173,7 +172,7 @@ namespace BGLB.MerberPoint.Business
             {
                 if (viewModel.Password != viewModel.PasswordConfim)
                 {
-                    return new OperateResult() { IsSuccess = false, Msg = "密码输入不一致" };
+                    return new OperateResult(false, "密码输入不一致");
                 }
                 model.MC_Password = viewModel.Password;
 
@@ -195,17 +194,17 @@ namespace BGLB.MerberPoint.Business
                 }
                 else
                 {
-                    return new OperateResult() { IsSuccess = false, Msg = "您输入的推荐人不存在" };
+                    return new OperateResult(false, "您输入的推荐人不存在");
                 }
             }
 
             if (Update(model))
             {
-                return new OperateResult() { IsSuccess = true, Msg = "更新成功" };
+                return new OperateResult(true, "更新成功");
             }
             else
             {
-                return new OperateResult() { IsSuccess = false, Msg = "网络异常" };
+                return new OperateResult(false, "网络异常");
             }
 
         }
@@ -222,14 +221,14 @@ namespace BGLB.MerberPoint.Business
                 var referer = Find(e => e.MC_CardID == CardId);
                 if (referer != null)
                 {
-                    return new OperateResult() { IsSuccess = true, Msg = "", Data = referer };
+                    return new OperateResult(true, "",referer);
                 }
                 else
                 {
-                    return new OperateResult() { IsSuccess = false, Msg = "您输入的推荐人不存在" };
+                    return new OperateResult(false, "您输入的推荐人不存在");
                 }
             }
-            return new OperateResult() { IsSuccess = false, Msg = "不能为空" };
+            return new OperateResult(false, "不能为空");
         }
 
         /// <summary>
@@ -242,16 +241,16 @@ namespace BGLB.MerberPoint.Business
             var model = Find(e => e.MC_ID == id);
             if (model == null)
             {
-                return new OperateResult() { IsSuccess = false, Msg = "该会员不存在" };
+                return new OperateResult(false, "该会员不存在");
             }
             if (Delete(model))
             {
-                return new OperateResult() { IsSuccess = false, Msg = "删除成功" };
+                return new OperateResult(true, "删除成功");
 
             }
             else
             {
-                return new OperateResult() { IsSuccess = true, Msg = "网络异常" };
+                return new OperateResult(false, "网络异常");
             }
         }
 
@@ -277,11 +276,11 @@ namespace BGLB.MerberPoint.Business
                 db.Database.ExecuteSqlCommand("EXEC dbo.SP_TransferMoney @userId,@fromMerberCarId,@toMerberCaId,@transferMoney,@remark,@errorMsg output", pams);
                 if (!string.IsNullOrWhiteSpace(pams[5].Value.ToString()))
                 {
-                    return new OperateResult() { IsSuccess = false, Msg = pams[5].Value.ToString() };
+                    return new OperateResult(false,pams[5].Value.ToString());
                 }
                 else
                 {
-                    return new OperateResult() { IsSuccess = true, Msg = "转账成功" };
+                    return new OperateResult(false, "转账成功");
 
                 }
 
@@ -289,7 +288,7 @@ namespace BGLB.MerberPoint.Business
             catch (Exception e)
             {
 
-                return new OperateResult() { IsSuccess = false, Msg = e.Message };
+                return new OperateResult(false, e.Message);
             }
             
         }
